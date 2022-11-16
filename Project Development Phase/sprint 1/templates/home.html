@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/vue@3"></script>
+    <style>
+      body {
+        color: #000;
+        overflow-x: hidden;
+        height: 100%;
+        background-color: #b0bec5;
+        background-repeat: no-repeat;
+      }
+
+      .card0 {
+        box-shadow: 0px 4px 8px 0px #757575;
+        border-radius: 0px;
+      }
+
+      .card2 {
+        margin: 0px 40px;
+      }
+
+      .logo {
+        width: 200px;
+        height: 100px;
+        margin-top: 20px;
+        margin-left: 35px;
+      }
+
+      .image {
+        width: 360px;
+        height: 280px;
+      }
+
+      .border-line {
+        border-right: 1px solid #eeeeee;
+      }
+
+      .line {
+        height: 1px;
+        width: 45%;
+        background-color: #e0e0e0;
+        margin-top: 10px;
+      }
+
+      .text-sm {
+        font-size: 14px !important;
+      }
+
+      ::placeholder {
+        color: #bdbdbd;
+        opacity: 1;
+        font-weight: 300;
+      }
+
+      :-ms-input-placeholder {
+        color: #bdbdbd;
+        font-weight: 300;
+      }
+
+      ::-ms-input-placeholder {
+        color: #bdbdbd;
+        font-weight: 300;
+      }
+
+      input,
+      textarea {
+        padding: 10px 12px 10px 12px;
+        border: 1px solid lightgrey;
+        border-radius: 2px;
+        margin-bottom: 5px;
+        margin-top: 2px;
+        width: 100%;
+        box-sizing: border-box;
+        color: #2c3e50;
+        font-size: 14px;
+        letter-spacing: 1px;
+      }
+
+      input:focus,
+      textarea:focus {
+        -moz-box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important;
+        border: 1px solid #304ffe;
+        outline-width: 0;
+      }
+
+      button:focus {
+        -moz-box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important;
+        outline-width: 0;
+      }
+
+      a {
+        color: inherit;
+        cursor: pointer;
+      }
+
+      .btn-blue {
+        background-color: #1a237e;
+        width: 150px;
+        color: #fff;
+        border-radius: 2px;
+      }
+
+      .btn-blue:hover {
+        background-color: #000;
+        cursor: pointer;
+      }
+
+      .bg-blue {
+        color: #fff;
+        background-color: #1a237e;
+      }
+
+      @media screen and (max-width: 991px) {
+        .logo {
+          margin-left: 0px;
+        }
+
+        .image {
+          width: 300px;
+          height: 220px;
+        }
+
+        .border-line {
+          border-right: none;
+        }
+
+        .card2 {
+          border-top: 1px solid #eeeeee !important;
+          margin: 0px 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="container-fluid p-5" style="background-color: white">
+        <div class="row">
+          <p class="text-center h3 p-2">INVENTORY MANAGEMENT APP</p>
+        </div>
+        <div class="row d-flex">
+          <div class="col-lg-6">
+            <div class="card1 pb-5">
+              <div class="row">
+                <img
+                  src="{{url_for('static', filename='logo-image.png')}}"
+                  class="logo"
+                />
+              </div>
+              <div
+                class="row px-3 justify-content-center mt-4 mb-5 border-line"
+              >
+                <img
+                  src="{{url_for('static', filename='side-image.png')}}"
+                  class="image"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6" v-if="showSignin">
+            <div class="card2 card border-0 px-4 py-5">
+              <div class="row mb-3 px-3">
+                <h6 class="mb-0 mr-4 mt-2 text-center">
+                  SIGN IN TO YOUR ACCOUNT
+                </h6>
+              </div>
+              <hr />
+              <div class="row px-3">
+                <label class="mb-1"
+                  ><h6 class="mb-0 text-sm">Email Address</h6></label
+                >
+                <input
+                  class="mb-4"
+                  type="text"
+                  name="email"
+                  placeholder="Enter a valid email address"
+                />
+              </div>
+              <div class="row px-3">
+                <label class="mb-1"
+                  ><h6 class="mb-0 text-sm">Password</h6></label
+                >
+                <input
+                  class="mb-4"
+                  type="password"
+                  name="password"
+                  placeholder="Enter password"
+                />
+              </div>
+              <div class="row mb-3 px-3">
+                <button type="submit" class="btn btn-blue text-center">
+                  Login
+                </button>
+              </div>
+              <div class="row mb-4 px-3">
+                <small class="font-weight-bold"
+                  >Don't have an account?
+                  <a class="text-danger" @click="showSignUp">Register</a>
+                </small>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6" v-if="showSignup">
+            <form class="card2 card border-0 px-4 py-5">
+              <div class="row mb-1 px-3">
+                <h6 class="mb-0 mr-4 mt-2 text-center">CREATE YOUR ACCOUNT</h6>
+              </div>
+              <hr />
+              <div class="d-flex flex-row align-items-center mb-4">
+                <div class="form-outline flex-fill mb-0">
+                  <label class="mb-1"
+                    ><h6 class="mb-0 text-sm">Your name</h6></label
+                  >
+                  <input
+                    type="text"
+                    id="form3Example1c"
+                    class="form-control"
+                    placeholder="Username"
+                  />
+                </div>
+              </div>
+
+              <div class="d-flex flex-row align-items-center mb-4">
+                <div class="form-outline flex-fill mb-0">
+                  <label class="mb-1"
+                    ><h6 class="mb-0 text-sm">Your Email Address</h6></label
+                  >
+                  <input
+                    type="email"
+                    id="form3Example3c"
+                    class="form-control"
+                    placeholder="Enter a valid email address"
+                  />
+                </div>
+              </div>
+
+              <div class="d-flex flex-row align-items-center mb-4">
+                <div class="form-outline flex-fill mb-0">
+                  <label class="mb-1"
+                    ><h6 class="mb-0 text-sm">Password</h6></label
+                  >
+                  <input
+                    type="password"
+                    id="form3Example4c"
+                    class="form-control"
+                    placeholder="Enter password"
+                  />
+                </div>
+              </div>
+
+              <div class="form-check d-flex">
+                <input
+                  class="form-check-input me-2"
+                  type="checkbox"
+                  value=""
+                  id="form2Example3cg"
+                />
+                <label class="form-check-label" for="form2Example3g">
+                  Send Products Reports for this Email
+                </label>
+              </div>
+
+              <div class="d-flex mt-2 mb-1 lg-4">
+                <button type="button" class="btn btn-blue text-center">
+                  Register
+                </button>
+              </div>
+              <div class="row mb-4 px-3">
+                <small class="font-weight-bold"
+                  >Already have an account?
+                  <a class="text-danger" @click="showSignIn">Login</a>
+                </small>
+              </div>
+            </form>
+          </div>
+          <div class="bg-blue py-4">
+            <div class="row px-3">
+              <small class="ml-4 ml-sm-5 mb-2 text-center"
+                >Copyright &copy; 2019. All rights reserved.</small
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="{{url_for('static', filename='./js/index.js')}}"></script>
+  </body>
+</html>

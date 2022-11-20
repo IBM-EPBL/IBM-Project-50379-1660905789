@@ -30,6 +30,17 @@ print(dsn)
 
 conn = ibm_db.connect(dsn,"","")
 
+def updateHistory(code,name,quantity,purchasedPrice,soldPrice):
+    insert_sql='INSERT INTO historys VALUES (?,?,?,?,?)'
+    pstmt=ibm_db.prepare(conn, insert_sql)
+    ibm_db.bind_param(pstmt,1,code)
+    ibm_db.bind_param(pstmt,2,name)
+    ibm_db.bind_param(pstmt,3,quantity)
+    ibm_db.bind_param(pstmt,4,purchasedPrice)
+    ibm_db.bind_param(pstmt,5,soldPrice)
+    ibm_db.execute(pstmt)
+
+
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -45,8 +56,14 @@ def login():
     ibm_db.bind_param(stmt,1,email)
     ibm_db.execute(stmt)
     acnt=ibm_db.fetch_assoc(stmt)
-    print("acnt",acnt)
-    return render_template('home.html')
+    print("scnt",acnt)
+    if (not acnt):
+        return jsonify(acnt)
+    if password in acnt.values() :
+        return jsonify(True)
+    else:
+        return jsonify(False)
+    
 
 
 @app.route('/dashboard', methods=['GET'])
@@ -66,6 +83,8 @@ def register():
     username=input_json["username"]
     email=input_json["email"]
     password=input_json["password"]
+    sendreport=input_json["sendReport"]
+    print("hello da",sendreport)
     sql='SELECT * FROM users WHERE email =?'
     stmt = ibm_db.prepare(conn, sql)
     ibm_db.bind_param(stmt,1,email)
@@ -73,60 +92,141 @@ def register():
     acnt=ibm_db.fetch_assoc(stmt)
     print("acnt",acnt)
     if acnt:
-        return jsonify(acnt)
-    
+        return jsonify(False)
     else:
-        id=random.sample(range(1, 1000), 1)
-        print("id value",id)
-        insert_sql='INSERT INTO users VALUES (?,?,?,?,?,?)'
+        insert_sql="INSERT INTO users (username, email, password, send_email, values) VALUES (?,?,?,?,?)"
         pstmt=ibm_db.prepare(conn, insert_sql)
-        ibm_db.bind_param(pstmt,1,id)
-        ibm_db.bind_param(pstmt,2,username)
+        ibm_db.bind_param(pstmt,1,username)
+        ibm_db.bind_param(pstmt,2,email)
         ibm_db.bind_param(pstmt,3,password)
-        ibm_db.bind_param(pstmt,4,email)
-        ibm_db.bind_param(pstmt,5,False)
-        ibm_db.bind_param(pstmt,6,20)
+        ibm_db.bind_param(pstmt,4,sendreport)
+        ibm_db.bind_param(pstmt,5,20)
         ibm_db.execute(pstmt)
-        return jsonify("success")      
+        return jsonify(True)      
     
 
 
 @app.route('/addproduct', methods=['POST'])
 def addProduct():
     input_json = request.get_json(force=True) 
-    print('data from client:',type(input_json))
-    print('data from client:',input_json, input_json['email'])
-    return render_template('dashboard.html')
+    code=input_json["CODE"]
+    name=input_json["NAME"]
+    purchasePrice=input_json["PURCHASEPRICE"]
+    salePrice=input_json["SALEPRICE"]
+    sql='SELECT * FROM products WHERE code =? OR name =?'
+    stmt = ibm_db.prepare(conn, sql)
+    ibm_db.bind_param(stmt,1,code)
+    ibm_db.bind_param(stmt,2,name)
+    ibm_db.execute(stmt)
+    acnt=ibm_db.fetch_assoc(stmt)
+    print("product",acnt)
+    if acnt:
+        return jsonify(False)
+    
+    else:
+        insert_sql='INSERT INTO products VALUES (?,?,?,?,?)'
+        pstmt=ibm_db.prepare(conn, insert_sql)
+        ibm_db.bind_param(pstmt,1,code)
+        ibm_db.bind_param(pstmt,2,name)
+        ibm_db.bind_param(pstmt,3,0)
+        ibm_db.bind_param(pstmt,4,purchasePrice)
+        ibm_db.bind_param(pstmt,5,salePrice)
+        ibm_db.execute(pstmt)
+        return jsonify()
 
 @app.route('/purchaseentry', methods=['POST'])
 def purchaseentry():
     input_json = request.get_json(force=True) 
-    print('data from client:',type(input_json))
-    print('data from client:',input_json, input_json['email'])
-    return render_template('dashboard.html')
+    code=input_json["CODE"]
+    name=input_json["NAME"]
+    purchasedPrice=int(input_json["PURCHASEDPRICE"])
+    InputQuantity=int(input_json["QUANTITY"])
+    sql='SELECT * FROM products WHERE code =? OR name =?'
+    stmt = ibm_db.prepare(conn, sql)
+    ibm_db.bind_param(stmt,1,code)
+    ibm_db.bind_param(stmt,2,name)
+    ibm_db.execute(stmt)
+    acnt=ibm_db.fetch_assoc(stmt)
+    if (not acnt):
+        return jsonify(False)
+    
+    else:
+        id=acnt["CODE"]
+        quantity = acnt["QUANTITY"] + InputQuantity
+        insert_sql='update products set quantity = ? where code = ?'
+        pstmt=ibm_db.prepare(conn, insert_sql)
+        ibm_db.bind_param(pstmt,1,quantity)
+        ibm_db.bind_param(pstmt,2,id)
+        ibm_db.execute(pstmt)
+        updateHistory(acnt["CODE"],acnt["NAME"],InputQuantity,purchasedPrice,0)
+        return jsonify(True)
 
 
 @app.route('/salesentry', methods=['POST'])
 def salesentry():
     input_json = request.get_json(force=True) 
-    print('data from client:',type(input_json))
-    print('data from client:',input_json, input_json['email'])
-    return render_template('dashboard.html')
+    code=input_json["CODE"]
+    name=input_json["NAME"]
+    soldPrice=int(input_json["SOLDPRICE"])
+    InputQuantity=int(input_json["QUANTITY"])
+    sql='SELECT * FROM products WHERE code =? OR name =?'
+    stmt = ibm_db.prepare(conn, sql)
+    ibm_db.bind_param(stmt,1,code)
+    ibm_db.bind_param(stmt,2,name)
+    ibm_db.execute(stmt)
+    acnt=ibm_db.fetch_assoc(stmt)
+    #print("product",quantity)
+    if (not acnt):
+        return jsonify(False)
+    
+    else:
+        id=acnt["CODE"]
+        quantity = acnt["QUANTITY"] - InputQuantity
+        if quantity < 0:
+            return jsonify("OPERATION INVALID: Available quantity " + str(acnt["QUANTITY"]))
+        insert_sql='update products set quantity = ? where code = ?'
+        pstmt=ibm_db.prepare(conn, insert_sql)
+        ibm_db.bind_param(pstmt,1,quantity)
+        ibm_db.bind_param(pstmt,2,id)
+        ibm_db.execute(pstmt)
+        updateHistory(acnt["CODE"],acnt["NAME"],InputQuantity,0,soldPrice)
+        return jsonify(True)
 
 
 @app.route('/transactions', methods=['GET'])
 def transactions():
-    input_json = request.get_json(force=True) 
-    print('data from client:',type(input_json))
-    print('data from client:',input_json, input_json['email'])
-    return render_template('dashboard.html')
+    sql='SELECT * FROM historys'
+    stmt = ibm_db.prepare(conn, sql)
+    result=ibm_db.execute(stmt)
+    print(result)
+
+    transactions=[]
+    row = ibm_db.fetch_assoc(stmt)
+    while(row):
+        transactions.append(row)
+        row = ibm_db.fetch_assoc(stmt)
+        print(row)
+    transactions=tuple(transactions)
+    return jsonify(transactions)
 
 @app.route('/products', methods=['GET'])
 def products():
-    input_json = request.get_json(force=True) 
-    print('data from client:',type(input_json))
-    print('data from client:',input_json, input_json['email'])
-    return render_template('dashboard.html')
+    sql='SELECT * FROM products'
+    stmt = ibm_db.prepare(conn, sql)
+    result=ibm_db.execute(stmt)
+    print(result)
+
+    products=[]
+    row = ibm_db.fetch_assoc(stmt)
+    print(row)
+    while(row):
+        products.append(row)
+        row = ibm_db.fetch_assoc(stmt)
+        print(row)
+    products=tuple(products)
+    print(products)
+    return jsonify(products)
+    
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 const linkColor = document.querySelectorAll(".nav_link");
+var modal = document.getElementById("myModal");
 
 const app = Vue.createApp({
   data() {
@@ -8,8 +9,10 @@ const app = Vue.createApp({
       purchase: undefined,
       sales: undefined,
       transactions: undefined,
-      showdanger:undefined,
-      showsuccess:undefined,
+      showdanger: undefined,
+      showsuccess: undefined,
+      products: undefined,
+      historys: undefined,
     };
   },
   methods: {
@@ -46,6 +49,12 @@ const app = Vue.createApp({
       this.clearMsg();
       this[e.currentTarget.id] = true;
     },
+    callPurchase() {
+      document.getElementById("purchase").click();
+    },
+    callSale() {
+      document.getElementById("sales").click();
+    },
     makeUndefined() {
       this.dashboard = undefined;
       this.product = undefined;
@@ -53,85 +62,179 @@ const app = Vue.createApp({
       this.sales = undefined;
       this.transactions = undefined;
     },
-    clearMsg(){
-      this.showdanger = undefined ;
+    clearMsg() {
+      this.showdanger = undefined;
       this.showsuccess = undefined;
     },
-    async getTransactions(){
+    async getTransactions() {
       this.clearMsg();
-      const response = await fetch('/transactions');
+      const response = await fetch("/transactions");
+      const result = await response.json();
+      this.historys = result;
     },
-    async getProductsReport(){
-      this.clearMsg();
-      const response = await fetch('/products');
-    },
-    signout(){
+    signout() {
       window.location.href = "http://localhost:5000";
     },
-    async addNewProduct(){
-      this.clearMsg();
-      this.showsuccess = true ;
-         Vue.nextTick(() =>document.getElementById("success-msg").innerHTML = "New Product has been Added");
-      const addProductCode = document.getElementById("addProductCode").value;
-      const addProductName = document.getElementById("addProductName").value.trim();
-      const addProductSalePrice = document.getElementById("addProductSalePrice").value;
-      const addProductPurchasePrice = document.getElementById("addProductPurchasePrice").value;
-      if (addProductCode == "" || addProductName == "" || addProductSalePrice == "" || addProductPurchasePrice == ""){
-         this.showdanger = true ;
-         Vue.nextTick(() =>document.getElementById("danger-msg").innerHTML = "Please Fill up all the fields!");
-         return
+    sendMsg(particular, value) {
+      if (particular == "danger") {
+        this.showdanger = true;
+        Vue.nextTick(
+          () => (document.getElementById("danger-msg").innerHTML = value)
+        );
+      } else {
+        this.showsuccess = true;
+        Vue.nextTick(
+          () => (document.getElementById("success-msg").innerHTML = value)
+        );
       }
-      const response = await fetch('/hello', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json, text/plain, */*','Content-Type': 'application/json'},
-        body: JSON.stringify({name:addProductName , code: addProductCode,salePrice:addProductSalePrice,purchasePrice:addProductPurchasePrice})
-      })
     },
-    async purchaseEntry(){
+    async getProducts() {
       this.clearMsg();
-      this.showsuccess = true ;
-         Vue.nextTick(() =>document.getElementById("success-msg").innerHTML = "Purchase Entry Added");
-        const purchaseProductCode = document.getElementById("purchaseProductCode").value;
-        const purchaseProductName = document.getElementById("purchaseProductName").value.trim();
-        const purchasePrice = document.getElementById("purchasePrice").value;
-        const purchaseQuantity = document.getElementById("purchaseQuantity").value;
-        if (purchaseProductCode == "" || purchaseProductName == "" || purchasePrice == "" || purchaseQuantity == ""){
-          this.showdanger = true ;
-          Vue.nextTick(() =>document.getElementById("danger-msg").innerHTML = "Please Fill up all the fields!");
-          return
-       }
-       const response = await fetch('/hello', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json, text/plain, */*','Content-Type': 'application/json'},
-        body: JSON.stringify({name:purchaseProductName , code: purchaseProductCode,purchaseQuantity,purchasePrice})
-      })
+      const response = await fetch("/products");
+      const result = await response.json();
+      this.products = result;
     },
-    async saleEntry(){
+    updateQuantity(id, type, value) {
+      this.products.forEach((el) => {
+        if (el.CODE == id)
+          type == "sold"
+            ? (el.QUANTITY = el.QUANTITY - value)
+            : (el.QUANTITY = el.QUANTITY + value);
+      });
+    },
+    async addNewProduct() {
       this.clearMsg();
-      this.showsuccess = true ;
-         Vue.nextTick(() =>document.getElementById("success-msg").innerHTML = "Sales Entry Added");
-        const salesProductCode = document.getElementById("salesProductCode").value;
-        const salesProductName = document.getElementById("salesProductName").value.trim();
-        const salesPrice = document.getElementById("salesPrice").value;
-        const salesQuantity = document.getElementById("salesQuantity").value;
-        if (salesProductCode == "" || salesProductName == "" || salesPrice == "" || salesQuantity == ""){
-          this.showdanger = true ;
-          Vue.nextTick(() =>document.getElementById("danger-msg").innerHTML = "Please Fill up all the fields!");
-          return
-       }
-       const response = await fetch('/hello', {
-        method: 'POST',
+      const addProductCode = document.getElementById("addProductCode").value;
+      const addProductName = document
+        .getElementById("addProductName")
+        .value.trim();
+      const addProductSalePrice = document.getElementById(
+        "addProductSalePrice"
+      ).value;
+      const addProductPurchasePrice = document.getElementById(
+        "addProductPurchasePrice"
+      ).value;
+      if (
+        addProductCode == "" ||
+        addProductName == "" ||
+        addProductSalePrice == "" ||
+        addProductPurchasePrice == ""
+      ) {
+        this.sendMsg("danger", "Please Fill up all the fields!");
+        return;
+      }
+      const aProduct = {
+        NAME: addProductName,
+        CODE: addProductCode,
+        SALEPRICE: addProductSalePrice,
+        PURCHASEPRICE: addProductPurchasePrice,
+      };
+      const response = await fetch("/addproduct", {
+        method: "POST",
         headers: {
-            'Accept': 'application/json, text/plain, */*','Content-Type': 'application/json'},
-        body: JSON.stringify({name:salesProductName , code: salesProductCode,salesPrice,salesQuantity})
-      })
-    }
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(aProduct),
+      });
+      const result = await response.json();
+      if (result == false)
+        this.sendMsg("danger", "Product is already available");
+      else {
+        this.sendMsg("success", "New Product has been added");
+        aProduct.QUANTITY = 0;
+        this.products.push(aProduct);
+      }
+    },
+    async purchaseEntry() {
+      this.clearMsg();
+      const purchaseProductCode = document.getElementById(
+        "purchaseProductCode"
+      ).value;
+      const purchaseProductName = document
+        .getElementById("purchaseProductName")
+        .value.trim();
+      const purchasedPrice = document.getElementById("purchasePrice").value;
+      const purchaseQuantity =
+        document.getElementById("purchaseQuantity").value;
+      if (
+        purchaseProductCode == "" ||
+        purchaseProductName == "" ||
+        purchasedPrice == "" ||
+        purchaseQuantity == ""
+      ) {
+        this.sendMsg("danger", "Please Fill up all the fields");
+        return;
+      }
+      const aTransact = {
+        NAME: purchaseProductName,
+        CODE: purchaseProductCode,
+        QUANTITY: purchaseQuantity,
+        PURCHASEDPRICE: purchasedPrice,
+      };
+      const response = await fetch("/purchaseentry", {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(aTransact),
+      });
+      const result = await response.json();
+      if (result == false) this.sendMsg("danger", "Something went wrong!");
+      else {
+        this.sendMsg("success", "Purchase Entry Added");
+        this.updateQuantity(aTransact.CODE, "add", aTransact.QUANTITY);
+        aTransact.SOLDPRICE = 0;
+        this.historys.push(aTransact);
+      }
+    },
+    async saleEntry() {
+      this.clearMsg();
+      const salesProductCode =
+        document.getElementById("salesProductCode").value;
+      const salesProductName = document
+        .getElementById("salesProductName")
+        .value.trim();
+      const salesPrice = document.getElementById("salesPrice").value;
+      const salesQuantity = document.getElementById("salesQuantity").value;
+      if (
+        salesProductCode == "" ||
+        salesProductName == "" ||
+        salesPrice == "" ||
+        salesQuantity == ""
+      ) {
+        return;
+      }
+      const aTransact = {
+        NAME: salesProductName,
+        CODE: salesProductCode,
+        SOLDPRICE: salesPrice,
+        QUANTITY: salesQuantity,
+      };
+      const response = await fetch("/salesentry", {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(aTransact),
+      });
+      const result = await response.json();
+      if (result == false) this.sendMsg("danger", "Something went wrong!");
+      else if (result == true) {
+        this.sendMsg("success", "Sales Entry Added");
+        this.updateQuantity(aTransact.CODE, "sold", aTransact.QUANTITY);
+        aTransact.PURCHASEDPRICE = 0;
+        this.historys.push(aTransact);
+      } else this.sendMsg("danger", result);
+    },
   },
 
   mounted() {
     this.showNavbar("header-toggle", "nav-bar", "body-pd", "header");
+    this.getProducts();
+    this.getTransactions();
   },
   delimiters: ["${", "}$"],
 });

@@ -42,8 +42,8 @@
         transition: 0.5s;
       }
       .min-vh-100 {
-       min-height: 80vh!important;
-       }
+        min-height: 80vh !important;
+      }
       a {
         text-decoration: none;
       }
@@ -57,7 +57,7 @@
         align-items: center;
         justify-content: space-between;
         padding: 0 1rem;
-        background-color:#084298;
+        background-color: #084298;
         z-index: var(--z-fixed);
         transition: 0.5s;
       }
@@ -188,17 +188,23 @@
           <i class="bx bx-menu" id="header-toggle"></i>
         </div>
         <div>
-          <p class="m-0 p-3 h3 text-white" > INVENTORY APP</p>
+          <p class="m-0 p-3 h3 text-white">INVENTORY APP</p>
         </div>
-        <div class="btn-group p-0 ">
-          <button type="button" class="btn dropdown-toggle p-0 border-white" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class='bx bxs-user-pin bx-md' style='color:#f9f9f9'  ></i>
+        <div class="btn-group p-0">
+          <button
+            type="button"
+            class="btn dropdown-toggle p-0 border-white"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i class="bx bxs-user-pin bx-md" style="color: #f9f9f9"></i>
           </button>
           <ul class="dropdown-menu text-center">
-            <li><a class="dropdown-item p-0" href="#">settings</a></li>
-            <li><a href="#" class="dropdown-item" @click="signout">
-              <span class="nav_name">SignOut</span>
-            </a></li>
+            <li>
+              <a href="#" class="dropdown-item" @click="signout">
+                <span class="nav_name">SignOut</span>
+              </a>
+            </li>
           </ul>
         </div>
       </header>
@@ -210,23 +216,53 @@
               <span class="nav_logo-name">INVENTORY</span>
             </a>
             <div class="nav_list">
-              <a href="#" class="nav_link" v-bind:class="{ active: dashboard }" id="dashboard" v-on:click="colorLink">
+              <a
+                href="#"
+                class="nav_link"
+                v-bind:class="{ active: dashboard }"
+                id="dashboard"
+                v-on:click="colorLink"
+              >
                 <i class="bx bx-grid-alt nav_icon"></i>
                 <span class="nav_name">Dashboard</span>
               </a>
-              <a href="#" class="nav_link" v-bind:class="{ active: product }" id="product" @click="colorLink">
+              <a
+                href="#"
+                class="nav_link"
+                v-bind:class="{ active: product }"
+                id="product"
+                @click="colorLink"
+              >
                 <i class="bx bxl-product-hunt"></i>
                 <span class="nav_name">New Product</span>
               </a>
-              <a href="#" class="nav_link" v-bind:class="{ active: purchase }" id="purchase" @click="colorLink">
+              <a
+                href="#"
+                class="nav_link"
+                v-bind:class="{ active: purchase }"
+                id="purchase"
+                @click="colorLink"
+              >
                 <i class="bx bx-plus nav_icon"></i>
                 <span class="nav_name">Purchase Entry</span>
               </a>
-              <a href="#" class="nav_link" id="sales" v-bind:class="{ active: sales }" @click="colorLink">
+              <a
+                href="#"
+                class="nav_link"
+                id="sales"
+                v-bind:class="{ active: sales }"
+                @click="colorLink"
+              >
                 <i class="bx bx-minus nav_icon"></i>
                 <span class="nav_name">Sales Entry</span>
               </a>
-              <a href="#" class="nav_link"  id="transactions" v-bind:class="{ active: transactions }" @click="colorLink">
+              <a
+                href="#"
+                class="nav_link"
+                id="transactions"
+                v-bind:class="{ active: transactions }"
+                @click="colorLink"
+              >
                 <i class="bx bx-bar-chart-alt-2 nav_icon"></i>
                 <span class="nav_name">Transactions</span>
               </a>
@@ -235,129 +271,301 @@
         </nav>
       </div>
       <!--Container Main start-->
-      <div class="alert alert-danger mb-0 text-center" id="danger-msg" v-if="showdanger" role="alert"></div>
-      <div class="alert alert-info mb-0 text-center" id="success-msg" v-if="showsuccess" role="alert"></div>
+      <div
+        class="alert alert-danger mb-0 text-center"
+        id="danger-msg"
+        v-if="showdanger"
+        role="alert"
+      ></div>
+      <div
+        class="alert alert-info mb-0 text-center"
+        id="success-msg"
+        v-if="showsuccess"
+        role="alert"
+      ></div>
       <div class="height-100 bg-light" v-if="dashboard">
-        <div class="jumbotron d-flex align-items-center min-vh-100 justify-content-center">
+        <div
+          class="jumbotron d-flex align-items-center min-vh-100 justify-content-center"
+        >
           <div class="card2 card border-0 p-5">
             <div class="row mb-2 px-3">
-              <h1 class="mb-0 mr-4 mt-2 text-center">
-                Products Report
-              </h1>
-              <div class="text-center" id="productPage">No PRODUCTS YET</div>
+              <h1 class="mb-0 mr-4 mt-2 text-center">Products Report</h1>
+              <hr />
+              <div v-if="products">
+                <table class="table table-hover text-center">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Product Code</th>
+                      <th scope="col">Product Name</th>
+                      <th scope="col">Quantity</th>
+                      <th scope="col">Purchase Price</th>
+                      <th scope="col">Sale Price</th>
+                      <th scope="col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(product,i) in products.slice().reverse()">
+                      <th scope="row">${ ++i }$</th>
+                      <td>${ product.CODE }$</td>
+                      <td>${ product.NAME }$</td>
+                      <td>${ product.QUANTITY }$</td>
+                      <td>${ product.PURCHASEPRICE }$</td>
+                      <td>${ product.SALEPRICE }$</td>
+                      <td class="col"><button class="btn btn-sm border-1 me-1 btn-success" @click="callPurchase"><i class='bx bxs-plus-circle'></i></button>
+                        <button class=" btn btn-sm border-1 me-1 btn-warning" @click="callSale"><i class='bx bxs-minus-circle '></i>
+                          <button class="btn btn-sm border-1 me-1 btn-danger" @click="callPurchase"><i class='bx bxs-trash-alt' ></i></button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="text-center" v-else>No PRODUCTS YET</div>
             </div>
-            <hr />
           </div>
         </div>
       </div>
       <div class="height-100 bg-light" v-if="product">
-        <div class="jumbotron d-flex align-items-center min-vh-100 justify-content-center">
-        <div class="card2 card border-0 p-5">
-          <div class="row mb-2 px-3">
-            <h1 class="mb-0 mr-4 mt-2 text-center">
-              Add a New Product
-            </h1>
-          </div>
-          <hr />
-          <div class="row px-3 text-center pb-3">
-            <label class="col-6 "><h6 class="mb-0 text-sm pt-2">Product Code</h6></label>
-            <input class="col-6" type="text" id="addProductCode"  placeholder="Product ID"/>
-          </div>
-          <div class="row px-3 text-center pb-3">
-            <label class="col-6 "><h6 class="mb-0 text-sm pt-2">Product Name</h6></label>
-            <input class="col-6" type="text" id="addProductName"  placeholder="Name of the Product"/>
-          </div>
-          <div class="row px-3 text-center pb-3">
-            <label class="col-6 "><h6 class="mb-0 text-sm pt-2">Purchase Price</h6></label>
-            <input class="col-6" type="number" id="addProductPurchasePrice"  placeholder="0"/>
-          </div>
-          <div class="row px-3 text-center pb-3">
-            <label class="col-6 "><h6 class="mb-0 text-sm pt-2">Sale Price</h6></label>
-            <input class="col-6" type="number" id="addProductSalePrice"  placeholder="0"/>
-          </div>
-          <div class="row mt-3 mb-3 px-3">
-            <button type="submit" @click="addNewProduct"  class="btn btn-primary">ADD</button>
-          </div>
-        </div>
-      </div>
-      </div>
-      <div class="height-100 bg-light" v-if="purchase">
-        <div class="jumbotron d-flex align-items-center min-vh-100 justify-content-center">
+        <div
+          class="jumbotron d-flex align-items-center min-vh-100 justify-content-center"
+        >
           <div class="card2 card border-0 p-5">
             <div class="row mb-2 px-3">
-              <h1 class="mb-0 mr-4 mt-2 text-center">
-                Purchase Entry
-              </h1>
+              <h1 class="mb-0 mr-4 mt-2 text-center">Add a New Product</h1>
+              <a class="dropdown-item p-0" @click="getProducts" href="#"
+              data-bs-toggle="modal" data-bs-target="#exampleModal">settings</a
+              >
             </div>
             <hr />
             <div class="row px-3 text-center pb-3">
-              <label class="col-6 "><h6 class="mb-0 text-sm pt-2">Product Code</h6></label>
-              <input class="col-6" type="text" id="purchaseProductCode"  placeholder="Product ID"/>
+              <label class="col-6"
+                ><h6 class="mb-0 text-sm pt-2">Product Code</h6></label
+              >
+              <input
+                class="col-6"
+                type="text"
+                id="addProductCode"
+                placeholder="Product ID"
+              />
             </div>
             <div class="row px-3 text-center pb-3">
-              <label class="col-6 "><h6 class="mb-0 text-sm pt-2">Product Name</h6></label>
-              <input class="col-6" type="text" id="purchaseProductName"  placeholder="Name of the Product"/>
+              <label class="col-6"
+                ><h6 class="mb-0 text-sm pt-2">Product Name</h6></label
+              >
+              <input
+                class="col-6"
+                type="text"
+                id="addProductName"
+                placeholder="Name of the Product"
+              />
             </div>
             <div class="row px-3 text-center pb-3">
-              <label class="col-6 "><h6 class="mb-0 text-sm pt-2">Purchased Price</h6></label>
-              <input class="col-6" type="number" id="purchasePrice"  placeholder="0"/>
+              <label class="col-6"
+                ><h6 class="mb-0 text-sm pt-2">Purchase Price</h6></label
+              >
+              <input
+                class="col-6"
+                type="number"
+                id="addProductPurchasePrice"
+                placeholder="0"
+              />
             </div>
             <div class="row px-3 text-center pb-3">
-              <label class="col-6 "><h6 class="mb-0 text-sm pt-2">Quantity</h6></label>
-              <input class="col-6" type="number" id="purchaseQuantity"  placeholder="0"/>
+              <label class="col-6"
+                ><h6 class="mb-0 text-sm pt-2">Sale Price</h6></label
+              >
+              <input
+                class="col-6"
+                type="number"
+                id="addProductSalePrice"
+                placeholder="0"
+              />
             </div>
             <div class="row mt-3 mb-3 px-3">
-              <button type="submit" @click="purchaseEntry" class="btn btn-primary">Confirm</button>
+              <button
+                type="submit"
+                @click="addNewProduct"
+                class="btn btn-primary"
+              >
+                ADD
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="height-100 bg-light" v-if="purchase">
+        <div
+          class="jumbotron d-flex align-items-center min-vh-100 justify-content-center"
+        >
+          <div class="card2 card border-0 p-5">
+            <div class="row mb-2 px-3">
+              <h1 class="mb-0 mr-4 mt-2 text-center">Purchase Entry</h1>
+            </div>
+            <hr />
+            <div class="row px-3 text-center pb-3">
+              <label class="col-6"
+                ><h6 class="mb-0 text-sm pt-2">Product Code</h6></label>
+                <div class="col-6 p-0">
+              <select class="form-select col-6 p-0 py-1 text-center" id="purchaseProductCode"  aria-label="Default select example">
+                <option selected>Product ID</option>
+                <option v-for="(product,i) in products">${ product.CODE }$</option>
+              </select>
+                </div>
+            </div>
+            
+            <div class="row px-3 text-center pb-3">
+              <label class="col-6"
+                ><h6 class="mb-0 text-sm pt-2">Product Name</h6></label
+              >
+              <div class="col-6 p-0">
+                <select class="form-select col-6 p-0 py-1 text-center" id="purchaseProductName" aria-label="Default select example">
+                  <option selected>Product NAME</option>
+                  <option v-for="(product,i) in products">${ product.NAME }$</option>
+                </select>
+                  </div>
+            </div>
+            <div class="row px-3 text-center pb-3">
+              <label class="col-6"
+                ><h6 class="mb-0 text-sm pt-2">Purchased Price</h6></label
+              >
+              <input
+                class="col-6"
+                type="number"
+                id="purchasePrice"
+                placeholder="0"
+              />
+            </div>
+            <div class="row px-3 text-center pb-3">
+              <label class="col-6"
+                ><h6 class="mb-0 text-sm pt-2">Quantity</h6></label
+              >
+              <input
+                class="col-6"
+                type="number"
+                id="purchaseQuantity"
+                placeholder="0"
+              />
+            </div>
+            <div class="row mt-3 mb-3 px-3">
+              <button
+                type="submit"
+                @click="purchaseEntry"
+                class="btn btn-primary"
+              >
+                Confirm
+              </button>
             </div>
           </div>
         </div>
       </div>
       <div class="height-100 bg-light" v-if="sales">
-        <div class="jumbotron d-flex align-items-center min-vh-100 justify-content-center">
+        <div
+          class="jumbotron d-flex align-items-center min-vh-100 justify-content-center"
+        >
           <div class="card2 card border-0 p-5">
             <div class="row mb-2 px-3">
-              <h1 class="mb-0 mr-4 mt-2 text-center">
-                Sales Entry
-              </h1>
+              <h1 class="mb-0 mr-4 mt-2 text-center">Sales Entry</h1>
             </div>
             <hr />
             <div class="row px-3 text-center pb-3">
-              <label class="col-6 "><h6 class="mb-0 text-sm pt-2">Product Code</h6></label>
-              <input class="col-6" type="text" id="salesProductCode"  placeholder="Product ID"/>
+              <label class="col-6"
+                ><h6 class="mb-0 text-sm pt-2">Product Code</h6></label
+              >
+              <div class="col-6 p-0">
+              <select class="form-select col-6 p-0 py-1 text-center" id="salesProductCode"  aria-label="Default select example">
+                <option selected>Product Code</option>
+                <option v-for="(product,i) in products">${ product.CODE }$</option>
+              </select>
+              </div>
             </div>
             <div class="row px-3 text-center pb-3">
-              <label class="col-6 "><h6 class="mb-0 text-sm pt-2">Product Name</h6></label>
-              <input class="col-6" type="text" id="salesProductName"  placeholder="Name of the Product"/>
+              <label class="col-6"
+                ><h6 class="mb-0 text-sm pt-2">Product Name</h6></label
+              >
+              <div class="col-6 p-0">
+                <select class="form-select col-6 p-0 py-1 text-center" id="salesProductName"  aria-label="Default select example">
+                  <option selected>Product Name</option>
+                  <option v-for="(product,i) in products">${ product.NAME }$</option>
+                </select>
+              </div>
             </div>
             <div class="row px-3 text-center pb-3">
-              <label class="col-6 "><h6 class="mb-0 text-sm pt-2">Sold Price</h6></label>
-              <input class="col-6" type="number" id="salesPrice"  placeholder="0"/>
+              <label class="col-6"
+                ><h6 class="mb-0 text-sm pt-2">Sold Price</h6></label
+              >
+              <input
+                class="col-6"
+                type="number"
+                id="salesPrice"
+                placeholder="0"
+              />
             </div>
             <div class="row px-3 text-center pb-3">
-              <label class="col-6 "><h6 class="mb-0 text-sm pt-2">Quantity</h6></label>
-              <input class="col-6" type="number" id="salesQuantity"  placeholder="0"/>
+              <label class="col-6"
+                ><h6 class="mb-0 text-sm pt-2">Quantity</h6></label
+              >
+              <input
+                class="col-6"
+                type="number"
+                id="salesQuantity"
+                placeholder="0"
+              />
             </div>
             <div class="row mt-3 mb-3 px-3">
-              <button type="submit" @click="saleEntry" class="btn btn-primary">Confirm</button>
+              <button type="submit" @click="saleEntry" class="btn btn-primary">
+                Confirm
+              </button>
             </div>
           </div>
         </div>
       </div>
       <div class="height-100 bg-light" v-if="transactions">
-        <div class="jumbotron d-flex align-items-center min-vh-100 justify-content-center">
+        <div
+          class="jumbotron d-flex align-items-center min-vh-100 justify-content-center"
+        >
           <div class="card2 card border-0 p-5">
             <div class="row mb-2 px-3">
-              <h1 class="mb-0 mr-4 mt-2 text-center">
-                Transactions
-              </h1>
-              <P class="text-center">NO TRANSACTIONS YET!</P>
+              <h1 class="mb-0 mr-4 mt-2 text-center">Transactions</h1>
             </div>
             <hr />
+            <div v-if="historys">
+              <table class="table table-hover text-center">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Product Code</th>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Purchased Price</th>
+                    <th scope="col">Sold Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr  v-for="(history,i) in historys.slice().reverse()" v-bind:class="{
+                    'table-success': history.PURCHASEDPRICE,
+                    'table-warning': history.SOLDPRICE,
+                  }">
+                    <th scope="row">${ ++i }$</th>
+                    <td>${ history.CODE }$</td>
+                    <td>${ history.NAME }$</td>
+                    <td>${ history.QUANTITY }$</td>
+                    <td v-if="history.PURCHASEDPRICE == '0'">-</td>
+                    <td v-else>${ history.PURCHASEDPRICE }$</td>
+                    <td v-if="history.SOLDPRICE == '0'">-</td>
+                    <td v-else>${ history.SOLDPRICE }$</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p v-else class="text-center">NO TRANSACTIONS YET!</p>
           </div>
         </div>
       </div>
+
       <!--Container Main end-->
     </div>
-    <script src="{{url_for('static', filename='./js/dashboard.js')}}"></script>
+
+
+    
+    <script src="{{url_for('static', filename='js/dashboard.js')}}"></script>
   </body>
 </html>
